@@ -1,11 +1,12 @@
-// js-lambda-from-vs
 const AWS = require('aws-sdk')
 const cognito = new AWS.CognitoIdentityServiceProvider()
 
-const deleteUser = async(userPollId, username, region) => {
-    return await new Promise((resolve, reject) => {
+function cognitoSetRegion(region) {
+    cognito.region = region
+}
 
-        cognito.region = region
+const deleteUser = async(userPollId, username) => {
+    return await new Promise((resolve, reject) => {
 
         const params = {
             UserPoolId: userPollId,
@@ -22,10 +23,8 @@ const deleteUser = async(userPollId, username, region) => {
     })
 }
 
-const listUsers = async(userPollId, usernamePrefix, region) => {
+const listUsers = async(userPollId, usernamePrefix) => {
     return await new Promise((resolve, reject) => {
-
-        cognito.region = region
 
         const usernameFilter = "username ^= " + "\"" + usernamePrefix + "\""
 
@@ -49,15 +48,10 @@ const listUsers = async(userPollId, usernamePrefix, region) => {
 
 const main = async(event) => {
     console.log('Event:', event)
-    var users = listUsers(event.userPollId, event.usernamePrefix, event.region)
+    cognitoSetRegion(event.region)
+    var users = listUsers(event.userPollId, event.usernamePrefix)
     return users
 }
 
 exports.lambdaHandler = main
-
-// for local use only
-// const config = require('./config.json')
-// main({
-//     userPollId: config.userPollId,
-//     usernamePrefix: config.usernamePrefix
-// })
+// js-lambda-from-vs
