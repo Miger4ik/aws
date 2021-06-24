@@ -1,8 +1,12 @@
+// js-lambda-from-vs
 const AWS = require('aws-sdk')
-const cognito = new AWS.CognitoIdentityServiceProvider({region: 'us-east-2'})
+const cognito = new AWS.CognitoIdentityServiceProvider()
 
-const deleteUser = async(userPollId, username) => {
+const deleteUser = async(userPollId, username, region) => {
     return await new Promise((resolve, reject) => {
+
+        cognito.region = region
+
         const params = {
             UserPoolId: userPollId,
             Username: username
@@ -18,8 +22,10 @@ const deleteUser = async(userPollId, username) => {
     })
 }
 
-const listUsers = async(userPollId, usernamePrefix) => {
+const listUsers = async(userPollId, usernamePrefix, region) => {
     return await new Promise((resolve, reject) => {
+
+        cognito.region = region
 
         const usernameFilter = "username ^= " + "\"" + usernamePrefix + "\""
 
@@ -43,7 +49,7 @@ const listUsers = async(userPollId, usernamePrefix) => {
 
 const main = async(event) => {
     console.log('Event:', event)
-    var users = listUsers(event.userPollId, event.usernamePrefix)
+    var users = listUsers(event.userPollId, event.usernamePrefix, event.region)
     return users
 }
 

@@ -1,4 +1,5 @@
 {
     "userPollId": "us-east-2_BSmTaxcbR",
-    "usernamePrefix": "test_"
+    "usernamePrefix": "test_",
+    "region": "us-east-2"
 }
