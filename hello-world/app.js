@@ -24,7 +24,7 @@ const deleteUser = async(userPollId, username) => {
     });
 };
 
-const listUsers = async(userPollId, usernamePrefix) => {
+const clearAllTestUsers = async(userPollId, usernamePrefix) => {
     return await new Promise((resolve, reject) => {
 
         const usernameFilter = `username ^= \"${usernamePrefix}\"`; // "username ^= " + "\"" + usernamePrefix + "\"";
@@ -41,7 +41,9 @@ const listUsers = async(userPollId, usernamePrefix) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(data);
+                for (let key in data.Users) {
+                    deleteUser(userPollId, data.Users[key].Username);
+                }
             }
         });
     });
@@ -50,9 +52,7 @@ const listUsers = async(userPollId, usernamePrefix) => {
 const main = async(event) => {
     console.log('Event:', event);
     cognitoSetRegion(event.region);
-    const users = listUsers(event.userPollId, event.usernamePrefix);
-    // TODO видалення знайдених користувачів
-    return users;
+    return clearAllTestUsers(event.userPollId, event.usernamePrefix);
 };
 
 exports.lambdaHandler = main;
