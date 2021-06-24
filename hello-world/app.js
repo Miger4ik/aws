@@ -6,15 +6,10 @@ function cognitoSetRegion(region) {
     cognito.region = region;
 }
 
-const deleteUser = async(userPollId, username) => {
+const deleteUser = async(UserPoolId, Username) => {
     return await new Promise((resolve, reject) => {
 
-        const params = {
-            UserPoolId: userPollId,
-            Username: username
-        };
-
-        cognito.adminDeleteUser(params, (err, data) => {
+        cognito.adminDeleteUser({UserPoolId, Username}, (err, data) => {
             if(err) {
                 reject(err);
             } else {
@@ -37,13 +32,12 @@ const clearAllTestUsers = async(userPollId, usernamePrefix) => {
             PaginationToken: null
         };
 
-        cognito.listUsers(params, (err, data) => {
+        cognito.listUsers(params, async (err, data) => {
             if (err) {
                 reject(err);
             } else {
-                for (let key in data.Users) {
-                    deleteUser(userPollId, data.Users[key].Username);
-                }
+                await Promise.all(data.Users.map(u => deleteUser(userPollId, u.Username)));
+                resolve(data);
             }
         });
     });
